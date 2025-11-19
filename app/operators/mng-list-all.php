@@ -123,7 +123,7 @@
                      GROUP BY rc.username", $_SESSION['reportTable'], $_SESSION['reportQuery']);
     $res = $dbSocket->query($sql);
     $logDebugSQL .= "$sql;\n";
-    $numrows = $res->numRows();
+    $numrows = count($res->fetchAll(PDO::FETCH_ASSOC));
 
     if ($numrows > 0) {
         /* START - Related to pages_numbering.php */
@@ -146,7 +146,7 @@
         $records = array();
         $usernamelist = array();
 
-        while ($row = $res->fetchRow(DB_FETCHMODE_ASSOC)) {
+        while ($row = $res->fetch(PDO::FETCH_ASSOC)) {
             // we start storing data...
             // the enable flag is initialized to true
             // and the groups list is empty
@@ -177,7 +177,7 @@
                 'lastlogin' => $row['lastlogin'],
             );
             // in the same pass we init the $usernamelist
-            $usernamelist[] = sprintf("'%s'", $dbSocket->escapeSimple($this_username));
+            $usernamelist[] = sprintf("'%s'", $this_username);
         }
 
         $per_page_numrows = count($usernamelist);
@@ -191,7 +191,7 @@
             $logDebugSQL .= "$sql;\n";
 
             // foreach user we update the enabled flag and the grouplist
-            while ($row = $res->fetchRow(DB_FETCHMODE_ASSOC)) {
+            while ($row = $res->fetch(PDO::FETCH_ASSOC)) {
                 $this_username = $row['username'];
                 $this_groupname = $row['groupname'];
 

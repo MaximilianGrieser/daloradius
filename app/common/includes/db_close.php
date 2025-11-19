@@ -28,4 +28,4 @@ if (strpos($_SERVER['PHP_SELF'], '/common/includes/db_close.php') !== false) {
     exit;
 }
 
-$dbSocket->disconnect();
+$dbSocket = null;

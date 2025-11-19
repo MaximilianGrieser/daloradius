@@ -58,19 +58,17 @@ if (array_key_exists('csrf_token', $_POST) && isset($_POST['csrf_token']) &&
 
     include('../common/includes/db_open.php');
     
-    $operator_user = $dbSocket->escapeSimple($_POST['operator_user']);
-    $operator_pass = $dbSocket->escapeSimple($_POST['operator_pass']);
+    $operator_user = $_POST['operator_user'];
+    $operator_pass = $_POST['operator_pass'];
     
     $sqlFormat = "select * from %s where username='%s' and password='%s'";
     $sql = sprintf($sqlFormat, $configValues['CONFIG_DB_TBL_DALOOPERATORS'], $operator_user, $operator_pass);
     $res = $dbSocket->query($sql);
-    $numRows = $res->numRows();
-    
+    $row = $res->fetch(PDO::FETCH_ASSOC);
+
     // we only accept ONE AND ONLY ONE RECORD as result
-    if ($numRows === 1) {
-        $row = $res->fetchRow(DB_FETCHMODE_ASSOC);
+    if ($row) {
         $operator_id = $row['id'];
-        
         $_SESSION['daloradius_logged_in'] = true;
         $_SESSION['operator_user'] = $operator_user;
         $_SESSION['operator_id'] = $operator_id;

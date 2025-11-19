@@ -178,7 +178,7 @@ HTML;
                    $tableSetting['postauth']['user'], $tableSetting['postauth']['date'],
                    $configValues['CONFIG_DB_TBL_RADPOSTAUTH']);
     $res = $dbSocket->query($sql);
-    $numrows = $res->numRows();
+    $numrows = count($res->fetchAll(PDO::FETCH_ASSOC));
 
     echo '<div class="col-sm-12 col-md-6 m-0 px-3">';
     $title = t('button', 'LastConnectionAttempts');
@@ -189,7 +189,7 @@ HTML;
         $headers = array(t('all', 'Username'), t('all', 'RADIUSReply'), t('all', 'Date'));
         print_dashboard_table_head($headers);
         
-        while ($row = $res->fetchRow()) {
+        while ($row = $res->fetch()) {
             // Apply htmlspecialchars to each element of the row
             list($user, $reply, $datetime) = array_map(function($value) {
                 return htmlspecialchars(trim($value), ENT_QUOTES, 'UTF-8');
@@ -213,7 +213,7 @@ HTML;
                      ORDER BY `acctstarttime` DESC LIMIT 10",
                    $configValues['CONFIG_DB_TBL_RADACCT']);
     $res = $dbSocket->query($sql);
-    $numrows = $res->numRows();
+    $numrows = count($res->fetchAll(PDO::FETCH_ASSOC));
 
     echo '<div class="col-sm-12 col-md-6 m-0 px-3">';
     print_title('Currently online', "rep-online.php?orderBy=acctstarttime&orderType=desc", "bi-box-arrow-up-right");
@@ -221,7 +221,7 @@ HTML;
     if ($numrows > 0) {
         print_dashboard_table_head(array(t('all', 'Username'), 'Online since'));
         
-        while ($row = $res->fetchRow()) {
+        while ($row = $res->fetch()) {
             // Apply htmlspecialchars to each element of the row
             $row = array_map(function($value) {
                 return htmlspecialchars(trim($value), ENT_QUOTES, 'UTF-8');
@@ -252,7 +252,7 @@ HTML;
                     ORDER BY `session_time` DESC 
                     LIMIT 10", $configValues['CONFIG_DB_TBL_RADACCT']);
     $res = $dbSocket->query($sql);
-    $numrows = $res->numRows();
+    $numrows = count($res->fetchAll(PDO::FETCH_ASSOC));
 
     
     // Today's date

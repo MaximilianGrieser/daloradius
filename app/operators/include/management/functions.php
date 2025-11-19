@@ -541,7 +541,7 @@ function add_user_billing_info($dbSocket, $username, $params) {
  */
 function count_sql($dbSocket, $sql) {
     $res = $dbSocket->query($sql);
-    return intval($res->fetchrow()[0]);
+    return intval($res->fetch()[0]);
 }
 
 /**

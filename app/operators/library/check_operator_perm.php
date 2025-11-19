@@ -40,7 +40,8 @@ include('../common/includes/db_open.php');
 
 $sql = sprintf("SELECT access FROM %s WHERE operator_id=%d AND file='%s'",
                $configValues['CONFIG_DB_TBL_DALOOPERATORS_ACL'], $_SESSION['operator_id'], $file);
-$access = intval($dbSocket->getOne($sql)) === 1;
+$stmt = $dbSocket->query($sql);
+$access = intval($stmt->fetchColumn() === 1);
 
 include('../common/includes/db_close.php');
 

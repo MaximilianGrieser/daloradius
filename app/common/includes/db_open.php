@@ -48,7 +48,7 @@ if (strpos($_SERVER['PHP_SELF'], '/common/includes/db_open.php') !== false) {
     $mydbPort   = ($location) ? $location['Port']       : $configValues['CONFIG_DB_PORT'];
     $mydbName   = ($location) ? $location['Database']   : $configValues['CONFIG_DB_NAME'];
 
-    $dbConnectString = sprintf("%s://%s:%s@%s:%s/%s", $mydbEngine, $mydbUser, $mydbPass, $mydbHost, $mydbPort, $mydbName);
+    /*$dbConnectString = sprintf("%s://%s:%s@%s:%s/%s", $mydbEngine, $mydbUser, $mydbPass, $mydbHost, $mydbPort, $mydbName);
 
     // we introduced support for php's database abstraction layer which simplifies database connections
     // to different technologies like mysql, oracle, postgresql, etc...
@@ -60,9 +60,31 @@ if (strpos($_SERVER['PHP_SELF'], '/common/includes/db_open.php') !== false) {
 
     if (DB::isError($dbSocket)) {
         die(sprintf("<b>Database connection error</b><br/><b>Error Message</b>: %s<br/>", $dbSocket->getMessage()));
+    }*/
+
+    try {
+        $dsn = sprintf(
+            "mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4",
+            $mydbHost,
+            $mydbPort,
+            $mydbName
+        );
+
+        $pdoOptions = [
+            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::MYSQL_ATTR_SSL_CA       => '/etc/mysql/ssl/full-chain.pem',
+            PDO::MYSQL_ATTR_SSL_CERT     => '/etc/mysql/ssl/client-dalo-cert.pem',
+            PDO::MYSQL_ATTR_SSL_KEY      => '/etc/mysql/ssl/client-dalo-key.pem',
+            PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => true,
+        ];
+
+        $dbSocket = new PDO($dsn, $mydbUser, $mydbPass, $pdoOptions);
+    } catch (PDOException $e) {
+        die(sprintf("<b>Database connection error</b><br/><b>Error Message</b>: %s<br/>", $e->getMessage()));
     }
 
     include_once(dirname(__FILE__) . '/db_error_handler.php');      // we declare the errorHandler() function in errorHandling.php
 
-    $dbSocket->setErrorHandling(PEAR_ERROR_CALLBACK, 'errorHandler');   // setting errorHandler function for the dbSocket obj
+    //$dbSocket->setErrorHandling(PEAR_ERROR_CALLBACK, 'errorHandler');   // setting errorHandler function for the dbSocket obj
     $dbSocket->query("SET SESSION sql_mode = '';");
