@@ -77,8 +77,6 @@ function userSubscriptionAnalysis($username, $drawTable) {
     include_once('include/management/pages_common.php');
     include('../common/includes/db_open.php');
 
-    $username = $dbSocket->escapeSimple($username);
-
     $keys = array("Logins", "SUMSession", "SUMDownload", "SUMUpload", "SUMTraffic", );
 
     $data1 = array(
@@ -100,7 +98,7 @@ function userSubscriptionAnalysis($username, $drawTable) {
                       FROM %s WHERE UserName='%s' AND acctstoptime>0",
                    $configValues['CONFIG_DB_TBL_RADACCT'], $username);
     $res = $dbSocket->query($sql);
-    $row = $res->fetchRow(DB_FETCHMODE_ASSOC);
+    $row = $res->fetch(PDO::FETCH_ASSOC);
 
     foreach ($keys as $key) {
         $value = "(n/a)";
@@ -136,7 +134,7 @@ function userSubscriptionAnalysis($username, $drawTable) {
                        AND UserName='%s' AND acctstoptime>0", $configValues['CONFIG_DB_TBL_RADACCT'],
                                                               $nextMonth, $currMonth, $username);
     $res = $dbSocket->query($sql);
-    $row = $res->fetchRow(DB_FETCHMODE_ASSOC);
+    $row = $res->fetch(PDO::FETCH_ASSOC);
 
     foreach ($keys as $key) {
         $value = "(n/a)";
@@ -171,7 +169,7 @@ function userSubscriptionAnalysis($username, $drawTable) {
                        AND UserName='%s' AND acctstoptime>0", $configValues['CONFIG_DB_TBL_RADACCT'],
                                                               $nextDay, $currDay, $username);
     $res = $dbSocket->query($sql);
-    $row = $res->fetchRow(DB_FETCHMODE_ASSOC);
+    $row = $res->fetch(PDO::FETCH_ASSOC);
 
     foreach ($keys as $key) {
         $value = "(n/a)";
@@ -206,7 +204,7 @@ function userSubscriptionAnalysis($username, $drawTable) {
                        AND UserName='%s' AND acctstoptime>0", $configValues['CONFIG_DB_TBL_RADACCT'],
                                                               $nextDay, $currDay, $username);
     $res = $dbSocket->query($sql);
-    $row = $res->fetchRow(DB_FETCHMODE_ASSOC);
+    $row = $res->fetch(PDO::FETCH_ASSOC);
 
     if ($row) {
         foreach ($keys as $key) {
@@ -242,7 +240,7 @@ function userSubscriptionAnalysis($username, $drawTable) {
     $sql = sprintf("SELECT Value AS 'Expiration' FROM %s WHERE UserName='%s' AND Attribute='Expiration'",
                    $configValues['CONFIG_DB_TBL_RADCHECK'], $username);
     $res = $dbSocket->query($sql);
-    $row = $res->fetchRow(DB_FETCHMODE_ASSOC);
+    $row = $res->fetch(PDO::FETCH_ASSOC);
 
     if (isset($row['Expiration'])) {
         $data2["Expiration"] = $row['Expiration'];
@@ -256,7 +254,7 @@ function userSubscriptionAnalysis($username, $drawTable) {
     $sql = sprintf("SELECT Value AS 'Session-Timeout' FROM %s WHERE UserName='%s' AND Attribute='Session-Timeout'",
                    $configValues['CONFIG_DB_TBL_RADREPLY'], $username);
     $res = $dbSocket->query($sql);
-    $row = $res->fetchRow(DB_FETCHMODE_ASSOC);
+    $row = $res->fetch(PDO::FETCH_ASSOC);
 
     if (isset($row['Session-Timeout'])) {
         $data2["Session-Timeout"] = $row['Session-Timeout'];
@@ -276,7 +274,7 @@ function userSubscriptionAnalysis($username, $drawTable) {
                     $configValues['CONFIG_DB_TBL_RADREPLY'], $username, $configValues['CONFIG_DB_TBL_RADGROUPREPLY'],
                     $configValues['CONFIG_DB_TBL_RADUSERGROUP'], $username);
     $res = $dbSocket->query($sql);
-    $row = $res->fetchRow(DB_FETCHMODE_ASSOC);
+    $row = $res->fetch(PDO::FETCH_ASSOC);
 
     if (isset($row['Idle-Timeout'])) {
         $data2["Idle-Timeout"] = $row['Idle-Timeout'];
@@ -354,8 +352,6 @@ function userPlanInformation($username, $drawTable) {
     include_once('include/management/pages_common.php');
     include('../common/includes/db_open.php');
 
-    $username = $dbSocket->escapeSimple($username);
-
     /*
      *********************************************************************************************************
      * check which kind of subscription does the user have
@@ -368,7 +364,7 @@ function userPlanInformation($username, $drawTable) {
                    $configValues['CONFIG_DB_TBL_DALOBILLINGPLANS'], $configValues['CONFIG_DB_TBL_DALOUSERBILLINFO'],
                    $username);
     $res = $dbSocket->query($sql);
-    $row = $res->fetchRow(DB_FETCHMODE_ASSOC);
+    $row = $res->fetch(PDO::FETCH_ASSOC);
 
     $data2 = array(
                     "planName" => array( "Label" => "Plan Name", "Value" => "(n/a)", ),
@@ -398,7 +394,7 @@ function userPlanInformation($username, $drawTable) {
     $sql = sprintf("SELECT SUM(AcctSessionTime), SUM(AcctOutputOctets), SUM(AcctInputOctets)
                       FROM %s WHERE username='%s'", $configValues['CONFIG_DB_TBL_RADACCT'], $username);
     $res = $dbSocket->query($sql);
-    $row = $res->fetchRow();
+    $row = $res->fetch();
     $totalTimeUsed = isset($row[0]) ? intval($row[0]) : 0;
     $totalTrafficDown = isset($row[1]) ? intval($row[1]) : 0;
     $totalTrafficUp = isset($row[2]) ? intval($row[2]) : 0;
@@ -488,9 +484,6 @@ function userConnectionStatus($username, $drawTable) {
     include_once('include/management/pages_common.php');
     include('../common/includes/db_open.php');
 
-    // sanitize variable for sql statement
-    $username = $dbSocket->escapeSimple($username);
-
     $sql = sprintf("SELECT AcctStartTime,
                            CASE WHEN AcctStopTime IS NULL THEN timestampdiff(SECOND,AcctStartTime,NOW())
                                 ELSE AcctSessionTime
@@ -502,7 +495,7 @@ function userConnectionStatus($username, $drawTable) {
                     "Station ID", "Station ID", $configValues['CONFIG_DB_TBL_RADACCT'], $username);
 
     $res = $dbSocket->query($sql);
-    $row = $res->fetchRow(DB_FETCHMODE_ASSOC);
+    $row = $res->fetch(PDO::FETCH_ASSOC);
 
     $data = array(
                     "userStatus" => array( "Label" => "User Status", "Value" => $userStatus, ),
@@ -519,7 +512,7 @@ function userConnectionStatus($username, $drawTable) {
     $fields = array_keys($data);
 
     foreach ($fields as $field) {
-        if (isset($row) && array_key_exists($field, $row) && !empty($row[$field])) {
+        if (isset($row) && is_array($row) && array_key_exists($field, $row) && !empty($row[$field])) {
 
             if ($field == "AcctSessionTime") {
                 $value = time2str($row[$field]);
@@ -568,15 +561,13 @@ function checkUserOnline($username) {
 
     include('../common/includes/db_open.php');
 
-    $username = $dbSocket->escapeSimple($username);
-
     $sql = sprintf("SELECT COUNT(username) FROM %s
                      WHERE AcctStopTime IS NULL AND Username='%s'
                         OR AcctStopTime = '0000-00-00 00:00:00' AND Username='%s'",
                    $configValues['CONFIG_DB_TBL_RADACCT'], $username, $username);
     $res = $dbSocket->query($sql);
 
-    $numrows = intval($res->fetchRow()[0]);
+    $numrows = intval($res->fetch(PDO::FETCH_NUM)[0]);
 
     include('../common/includes/db_close.php');
 

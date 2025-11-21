@@ -234,7 +234,7 @@ CREATE TABLE IF NOT EXISTS `cui` (
   `username` varchar(64) NOT NULL DEFAULT '',
   `cui` varchar(128) NOT NULL DEFAULT '',
   `creationdate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `lastaccounting` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `lastaccounting` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY  (`username`,`clientipaddress`,`callingstationid`)
 );
 

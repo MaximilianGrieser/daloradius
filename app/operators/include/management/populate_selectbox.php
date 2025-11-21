@@ -242,7 +242,7 @@ function get_active_plans() {
 
     $result = array();
     
-    while ($row = $res->fetchRow()) {
+    while ($row = $res->fetch(PDO::FETCH_ASSOC)) {
         list($planName, $id) = $row;
         $result[$id] = $planName;
     }
@@ -409,7 +409,7 @@ function list_from_db($sql) {
     $res = $dbSocket->query($sql);
 
     $result = array();
-    while ($row = $res->fetch()) {
+    while ($row = $res->fetch(PDO::FETCH_NUM)) {
         $result[] = $row[0];
     }
     include('../common/includes/db_close.php');

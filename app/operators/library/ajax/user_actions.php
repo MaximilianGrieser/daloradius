@@ -82,11 +82,6 @@ if (array_key_exists('username', $_GET) && isset($_GET['username']) &&
     include('../../../common/includes/db_open.php');
     include_once('../../include/management/pages_common.php');
 
-    // further escape usernames for safe db queries
-    foreach ($usernames as $i => $username) {
-        $usernames[$i] = $dbSocket->escapeSimple($username);
-    }
-
     // commonly used in the following lines of code
     $username_list = "'" . implode("', '", $usernames) . "'";
 
@@ -216,9 +211,9 @@ if (array_key_exists('username', $_GET) && isset($_GET['username']) &&
             $username = $usernames[0];
             $sql = sprintf("SELECT username FROM %s WHERE username='%s' AND groupname='%s'",
                            $configValues['CONFIG_DB_TBL_RADUSERGROUP'],
-                           $dbSocket->escapeSimple($username), $disabled_groupname);
+                           $username, $disabled_groupname);
             $res = $dbSocket->query($sql);
-            $numrows = $res->numRows();
+            $numrows = count($res->fetchAll(PDO::FETCH_ASSOC));
             if ($numrows > 0) {
                 $class = "danger";
                 $message = sprintf('Please note that user <strong>%s</strong> is currently disabled.',

@@ -36,7 +36,7 @@ $sql = sprintf("SELECT DISTINCT(Vendor) AS Vendor
                  ORDER BY Vendor ASC",
                $configValues['CONFIG_DB_TBL_DALODICTIONARY']);
 $res = $dbSocket->query($sql);
-while ($row = $res->fetchRow()) {
+while ($row = $res->fetch(PDO::FETCH_NUM)) {
     $vendors[] = $row[0];
 }
 
@@ -49,7 +49,7 @@ if (isset($configValues['CONFIG_IFACE_AUTO_COMPLETE']) && strtolower($configValu
                     $configValues['CONFIG_DB_TBL_DALODICTIONARY']);
 
     $res = $dbSocket->query($sql);
-    while ($row = $res->fetchRow()) {
+    while ($row = $res->fetch(PDO::FETCH_NUM)) {
         $attributes[] = $row[0];
     }
 

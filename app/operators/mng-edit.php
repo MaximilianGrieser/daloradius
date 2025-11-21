@@ -328,17 +328,17 @@
 
         /* an sql query to retrieve the password for the username to use in the quick link for the user test connectivity */
         $sql = sprintf("SELECT value FROM %s WHERE username='%s' AND attribute LIKE '%%-Password' ORDER BY id DESC",
-                       $configValues['CONFIG_DB_TBL_RADCHECK'], $dbSocket->escapeSimple($username));
+                       $configValues['CONFIG_DB_TBL_RADCHECK'], $username);
         $res = $dbSocket->query($sql);
         $logDebugSQL .= "$sql;\n";
-        $user_password = $res->fetchRow()[0];
+        $user_password = $res->fetch(PDO::FETCH_NUM)[0];
 
         /* fill-in all the user info details */
         $sql = sprintf("SELECT firstname, lastname, email, department, company, workphone, homephone, mobilephone, address, city,
                                state, country, zip, notes, changeuserinfo, portalloginpassword, enableportallogin, creationdate,
                                creationby, updatedate, updateby
                           FROM %s WHERE username='%s'", $configValues['CONFIG_DB_TBL_DALOUSERINFO'],
-                                                        $dbSocket->escapeSimple($username));
+                                                        $username);
         $res = $dbSocket->query($sql);
         $logDebugSQL .= "$sql;\n";
 
@@ -347,7 +347,7 @@
               $ui_mobilephone, $ui_address, $ui_city, $ui_state, $ui_country, $ui_zip, $ui_notes, $ui_changeuserinfo,
               $ui_PortalLoginPassword, $ui_enableUserPortalLogin, $ui_creationdate, $ui_creationby, $ui_updatedate,
               $ui_updateby
-            ) = $res->fetchRow();
+            ) = $res->fetch(PDO::FETCH_ASSOC);
 
         /* fill-in all the user bill info details */
         $sql = sprintf("SELECT planName, contactperson, company, email, phone, address, city, state, country, zip, paymentmethod,
@@ -356,7 +356,7 @@
                                nextinvoicedue, billdue, postalinvoice, faxinvoice, emailinvoice, creationdate, creationby,
                                updatedate, updateby
                           FROM %s WHERE username='%s'", $configValues['CONFIG_DB_TBL_DALOUSERBILLINFO'],
-                                                        $dbSocket->escapeSimple($username));
+                                                        $username);
         $res = $dbSocket->query($sql);
         $logDebugSQL .= "$sql;\n";
 
@@ -367,7 +367,7 @@
                 $bi_lead, $bi_coupon, $bi_ordertaker, $bi_billstatus, $bi_lastbill, $bi_nextbill, $bi_nextinvoicedue,
                 $bi_billdue, $bi_postalinvoice, $bi_faxinvoice, $bi_emailinvoice, $bi_creationdate, $bi_creationby,
                 $bi_updatedate, $bi_updateby
-            ) = $res->fetchRow();
+            ) = $res->fetch(PDO::FETCH_ASSOC);
 
         // inline extra javascript
         $inline_extra_js = sprintf("var strUsername = 'username=%s';\n", $username_enc);
@@ -582,16 +582,16 @@ EOF;
                           FROM %s AS rad LEFT JOIN %s AS dd ON rad.attribute = dd.attribute AND dd.value IS NULL
                          WHERE rad.username='%s' ORDER BY rad.id ASC", $configValues['CONFIG_DB_TBL_RADCHECK'],
                                                                        $configValues['CONFIG_DB_TBL_DALODICTIONARY'],
-                                                                       $dbSocket->escapeSimple($username));
+                                                                       $username);
         $res = $dbSocket->query($sql);
         $logDebugSQL .= "$sql;\n";
 
         echo '<div class="container">';
-
-        if ($res->numRows() == 0) {
+        
+        if (count($res->fetchAll(PDO::FETCH_ASSOC)) == 0) {
             printf('<div class="alert alert-info" role="alert">%s</div>', t('messages','noCheckAttributesForUser'));
         } else {
-            while ($row = $res->fetchRow()) {
+            while ($row = $res->fetch(PDO::FETCH_ASSOC)) {
 
                 foreach ($row as $i => $v) {
                     $row[$i] = htmlspecialchars($row[$i], ENT_QUOTES, 'UTF-8');
@@ -632,13 +632,13 @@ EOF;
                           FROM %s AS rad LEFT JOIN %s AS dd ON rad.attribute = dd.attribute AND dd.value IS NULL
                          WHERE rad.username='%s' ORDER BY rad.id ASC", $configValues['CONFIG_DB_TBL_RADREPLY'],
                                                                        $configValues['CONFIG_DB_TBL_DALODICTIONARY'],
-                                                                       $dbSocket->escapeSimple($username));
+                                                                       $username);
         $res = $dbSocket->query($sql);
         $logDebugSQL .= "$sql;\n";
 
 
         echo '<div class="container">';
-        if ($res->numRows() == 0) {
+        if (count($res->fetchAll(PDO::FETCH_ASSOC)) == 0) {
             printf('<div class="alert alert-info" role="alert">%s</div>', t('messages','noReplyAttributesForUser'));
         } else {
             while ($row = $res->fetchRow()) {
@@ -726,13 +726,13 @@ EOF;
         foreach ($tables as $table_value => $table) {
 
             $sql = sprintf("SELECT id, attribute, value FROM %s WHERE username='%s' ORDER BY id ASC",
-                           $table, $dbSocket->escapeSimple($username));
+                           $table, $username);
             $res = $dbSocket->query($sql);
             $logDebugSQL .= "$sql;\n";
 
-            if ($res->numRows() > 0) {
+            if (count($res->fetchAll(PDO::FETCH_ASSOC)) > 0) {
 
-                while ($row = $res->fetchrow()) {
+                while ($row = $res->fetch()) {
                     list($id, $attribute, $value) = $row;
                     $id = intval($id);
 

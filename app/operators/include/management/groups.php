@@ -42,12 +42,12 @@ $prorityLabel = t('all',$groupTerminologyPriority);
 
 
 $sql = sprintf("SELECT groupname, priority FROM %s WHERE username='%s' ORDER BY priority ASC",
-               $configValues['CONFIG_DB_TBL_RADUSERGROUP'], $dbSocket->escapeSimple($username));
+               $configValues['CONFIG_DB_TBL_RADUSERGROUP'], $username);
 $res = $dbSocket->query($sql);
 
 $_groups = array();
 
-while ($row = $res->fetchRow()) {
+while ($row = $res->fetch(PDO::FETCH_ASSOC)) {
     list($group_name, $group_priority) = $row;
     $group_priority = intval($group_priority);
     if (array_key_exists($group_name, $_groups)) {

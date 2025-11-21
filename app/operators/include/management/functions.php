@@ -135,11 +135,11 @@ function user_exists($dbSocket, $username, $table_index='CONFIG_DB_TBL_RADCHECK'
 
         // check if user exists in radcheck
         $sql = sprintf("SELECT COUNT(DISTINCT(username)) FROM %s WHERE username='%s'",
-                       $configValues[$table_index], $dbSocket->escapeSimple($username));
+                       $configValues[$table_index], $username);
         $res = $dbSocket->query($sql);
         $logDebugSQL .= "$sql;\n";
 
-        return $res->fetchrow()[0] > 0;
+        return $res->fetch(PDO::FETCH_NUM)[0] > 0;
     }
 }
 
@@ -541,7 +541,7 @@ function add_user_billing_info($dbSocket, $username, $params) {
  */
 function count_sql($dbSocket, $sql) {
     $res = $dbSocket->query($sql);
-    return intval($res->fetch()[0]);
+    return intval($res->fetch(PDO::FETCH_NUM)[0]);
 }
 
 /**
